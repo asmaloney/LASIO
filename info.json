@@ -1,0 +1,31 @@
+{
+	"type" : "I/O",
+	"name" : "LAS I/O",
+	"description": "Add LAS and LAZ read/write capability using the libLAS and LASzip libraries. Supports up to and including LAS 1.3.",
+	"authors" : [
+		{
+			"name" : "Daniel Girardeau-Montaut",
+			"email" : "daniel.girardeau@gmail.com"
+		},
+		{
+			"name" : "Andy Maloney",
+			"email" : "asmaloney@gmail.com"
+		}
+	],
+	"maintainers" : [
+		{
+			"name" : "Andy Maloney",
+			"email" : "asmaloney@gmail.com"
+		}
+	],
+	"references" : [
+		{
+			"text" : "libLAS git repo",
+			"url" : "https://github.com/libLAS/libLAS"
+		},
+		{
+			"text" : "LASzip git repo",
+			"url" : "https://github.com/LASzip/LASzip"
+		}
+	]
+}
