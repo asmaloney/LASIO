@@ -15,7 +15,7 @@
 //#                                                                        #
 //##########################################################################
 
-#include "qLASIO.h"
+#include "LASIO.h"
 
 #include "LASFilter.h"
 
@@ -28,6 +28,7 @@ LASIO::LASIO( QObject* parent ) :
 
 void LASIO::registerCommands( ccCommandLineInterface *cmd )
 {
+	Q_UNUSED( cmd );
 }
 
 QVector<FileIOFilter::Shared> LASIO::getFilters()
