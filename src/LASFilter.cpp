@@ -108,7 +108,7 @@ public:
 				EXTRA_DOUBLE	= 10 };
 
 	//! Default constructor
-	ExtraLasField(QString name, Type type, int off, double defaultVal = 0, double min = 0.0, double max = -1.0)
+	ExtraLasField(const QString &name, Type type, int off, double defaultVal = 0, double min = 0.0, double max = -1.0)
 		: LasField(LAS_EXTRA,defaultVal,min,max)
 		, fieldName(name)
 		, valType(type)
@@ -588,7 +588,7 @@ struct TilingStruct
 	bool init(	unsigned width,
 				unsigned height,
 				unsigned Zdim,
-				QString absoluteBaseFilename,
+				const QString &absoluteBaseFilename,
 				const CCVector3d& bbMin,
 				const CCVector3d& bbMax,
 				const liblas::Header& header)
