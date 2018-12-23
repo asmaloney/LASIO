@@ -91,8 +91,9 @@ bool LASFilter::canSave(CC_CLASS_ENUM type, bool& multiple, bool& exclusive) con
 }
 
 //! Custom ("Extra bytes") field
-struct ExtraLasField : LasField
+class ExtraLasField : public LasField
 {
+public:
 	//! Extra field type
 	enum Type {	EXTRA_INVALID	= 0,
 				EXTRA_UINT8		= 1,
