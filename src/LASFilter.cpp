@@ -22,34 +22,34 @@
 #include "LASOpenDlg.h"
 
 //qCC_db
+#include <ccColorScalesManager.h>
 #include <ccLog.h>
 #include <ccPointCloud.h>
 #include <ccProgressDialog.h>
 #include <ccScalarField.h>
-#include "ccColorScalesManager.h"
 
 //CCLib
 #include <CCPlatform.h>
 
 //Liblas
+#include <liblas/factory.hpp>
 #include <liblas/point.hpp>
 #include <liblas/reader.hpp>
 #include <liblas/writer.hpp>
-#include <liblas/factory.hpp>	// liblas::ReaderFactory
 Q_DECLARE_METATYPE(liblas::SpatialReference)
 
 //Qt
 #include <QFileInfo>
-#include <QSharedPointer>
 #include <QInputDialog>
+#include <QSharedPointer>
 
 //Qt gui
 #include <ui_saveLASFileDlg.h>
 
 //System
-#include <string.h>
-#include <fstream>				// std::ifstream
-#include <iostream>				// std::cout
+#include <cstring>
+#include <fstream>
+#include <iostream>
 
 static const char s_LAS_SRS_Key[] = "LAS.spatialReference.nosave"; //DGM: added the '.nosave' suffix because this custom type can't be streamed properly
 
