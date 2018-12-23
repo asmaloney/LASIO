@@ -1126,7 +1126,7 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 											if (options & 5) //5th bit = offset_bit
 												eField->offset = evlrs[i].offset[j];
 										}
-										fieldsToLoad.push_back(LasField::Shared(eField));
+										fieldsToLoad.emplace_back(eField);
 									}
 								}
 								else
