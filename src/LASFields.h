@@ -85,14 +85,17 @@ const char LAS_FIELD_NAMES[][28] = {"X",
 };
 
 //! LAS field descriptor
-struct QCC_IO_LIB_API LasField
+class QCC_IO_LIB_API LasField
 {
+public:
 	//! Shared type
-	typedef QSharedPointer<LasField> Shared;
+	using Shared = QSharedPointer<LasField>;
 
+public:
 	//! Default constructor
 	LasField(LAS_FIELDS fieldType = LAS_INVALID, double defaultVal = 0, double min = 0.0, double max = -1.0);
-
+	virtual ~LasField() = default;
+	
 	//! Returns official field name
 	virtual inline QString getName() const { return type < LAS_INVALID ? QString(LAS_FIELD_NAMES[type]) : QString(); }
 
