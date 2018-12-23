@@ -63,24 +63,23 @@ bool LasField::GetLASFields(ccPointCloud* cloud, std::vector<LasField>& fieldsTo
 			ccScalarField* sf = static_cast<ccScalarField*>(cloud->getScalarField(i));
 			//find an equivalent in official LAS fields
 			QString sfName = QString(sf->getName()).toUpper();
-			bool outBounds = false;
-			for (size_t j = 0; j < lasFields.size(); ++j)
+
+			for (const auto &lasField : lasFields)
 			{
 				//if the name matches
-				if (sfName == lasFields[j].getName().toUpper())
+				if (sfName == lasField.getName().toUpper())
 				{
 					//check bounds
 					double sfMin = sf->getGlobalShift() + sf->getMax();
 					double sfMax = sf->getGlobalShift() + sf->getMax();
-					if (sfMin < lasFields[j].minValue || (lasFields[j].maxValue != -1.0 && sfMax > lasFields[j].maxValue)) //outbounds?
+					if (sfMin < lasField.minValue || (lasField.maxValue != -1.0 && sfMax > lasField.maxValue)) //outbounds?
 					{
-						ccLog::Warning(QString("[LAS] Found a '%1' scalar field, but its values outbound LAS specifications (%2-%3)...").arg(sf->getName()).arg(lasFields[j].minValue).arg(lasFields[j].maxValue));
-						outBounds = true;
+						ccLog::Warning(QString("[LAS] Found a '%1' scalar field, but its values outbound LAS specifications (%2-%3)...").arg(sf->getName()).arg(lasField.minValue).arg(lasField.maxValue));
 					}
 					else
 					{
 						//we add the SF to the list of saved fields
-						fieldsToSave.push_back(lasFields[j]);
+						fieldsToSave.push_back(lasField);
 						fieldsToSave.back().sf = sf;
 					}
 					break;
