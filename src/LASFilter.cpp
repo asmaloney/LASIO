@@ -512,6 +512,15 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 }
 
 static QSharedPointer<LASOpenDlg> s_lasOpenDlg(nullptr);
+QStringList LASFilter::getFileFilters(bool onImport) const
+{
+	return QStringList(GetFileFilter());
+}
+
+QString LASFilter::getDefaultExtension() const
+{
+	return GetDefaultExtension();
+}
 
 //! LAS 1.4 EVLR record
 struct EVLR
