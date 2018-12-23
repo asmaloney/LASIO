@@ -51,7 +51,15 @@ Q_DECLARE_METATYPE(liblas::SpatialReference)
 #include <fstream>
 #include <iostream>
 
+class LASSaveDlg;
+
 static const char s_LAS_SRS_Key[] = "LAS.spatialReference.nosave"; //DGM: added the '.nosave' suffix because this custom type can't be streamed properly
+
+static QSharedPointer<LASOpenDlg> s_lasOpenDlg(nullptr);
+
+//! Semi persistent save dialog
+static QSharedPointer<LASSaveDlg> s_saveDlg(nullptr);
+
 
 //! LAS Save dialog
 class LASSaveDlg : public QDialog, public Ui::SaveLASFileDialog
@@ -150,9 +158,6 @@ struct ExtraLasField : LasField
 	double scale;
 	double offset;
 };
-
-//! Semi persistent save dialog
-QSharedPointer<LASSaveDlg> s_saveDlg(nullptr);
 
 //! Extended LAS writer
 class LASWriter
@@ -511,7 +516,6 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 	return result;
 }
 
-static QSharedPointer<LASOpenDlg> s_lasOpenDlg(nullptr);
 QStringList LASFilter::getFileFilters(bool onImport) const
 {
 	return QStringList(GetFileFilter());
