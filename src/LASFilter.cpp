@@ -23,6 +23,7 @@
 
 //qCC_db
 #include <ccColorScalesManager.h>
+#include <ccHObjectCaster.h>
 #include <ccLog.h>
 #include <ccPointCloud.h>
 #include <ccProgressDialog.h>
@@ -117,8 +118,7 @@ public:
 		, offset(0.0)
 	{}
 
-	//reimplemented from LasField
-	virtual inline QString getName() const	{ return fieldName; }
+	inline QString getName() const override { return fieldName; }
 
 	//! Returns the size (in bytes) of the specified type
 	static size_t GetSizeBytes(Type type)
@@ -245,7 +245,7 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 	}
 
 	//colors
-	bool hasColor = theCloud->hasColors();
+	bool hasColors = theCloud->hasColors();
 
 	//standard las fields (as scalar fields)
 	std::vector<LasField> fieldsToSave;
@@ -694,10 +694,10 @@ struct TilingStruct
 
 protected:
 
-	inline unsigned index(unsigned i, unsigned j) const { return i + j * w; }
+	inline unsigned int index(unsigned int i, unsigned int j) const { return i + j * w; }
 	
-	unsigned w, h;
-	unsigned X, Y, Z;
+	unsigned int w, h;
+	unsigned int X, Y, Z;
 	CCVector3d bbMinCorner, tileDiag;
 	std::vector<LASWriter*> tileFiles;
 };
@@ -720,7 +720,7 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 		//handling of compressed/uncompressed files
 		liblas::Header const& header = reader.GetHeader();
 
-		ccLog::Print(QString("[LAS] %1 - signature: %2").arg(filename).arg(header.GetFileSignature().c_str()));
+		ccLog::Print(QString("[LAS] %1 - signature: %2").arg(filename, header.GetFileSignature().c_str()));
 
 		//get the bounding-box (for tiling)
 		CCVector3d bbMin(header.GetMinX(), header.GetMinY(), header.GetMinZ());
@@ -768,7 +768,7 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 								{
 									const EVLR* evlr = reinterpret_cast<const EVLR*>(vlrData + j*EB_RECORD_SIZE);
 									evlrs.push_back(*evlr);
-									ccLog::PrintDebug(QString("[LAS] Extra bytes VLR found: %1 (%2)").arg(evlr->getName()).arg(evlr->getDescription()));
+									ccLog::PrintDebug(QString("[LAS] Extra bytes VLR found: %1 (%2)").arg(evlr->getName(), evlr->getDescription()));
 								}
 							}
 						}
@@ -805,13 +805,13 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 		}
 		s_lasOpenDlg->setDimensions(dimensions);
 		s_lasOpenDlg->clearEVLRs();
-		s_lasOpenDlg->setInfos(filename, nbOfPoints, bbMin, bbMax);
+		s_lasOpenDlg->setInfo(filename, nbOfPoints, bbMin, bbMax);
 		if (extraDimension)
 		{
 			assert(!evlrs.empty());
 			for (const EVLR& evlr : evlrs)
 			{
-				s_lasOpenDlg->addEVLR(QString("%1 (%2)").arg(evlr.getName()).arg(evlr.getDescription()));
+				s_lasOpenDlg->addEVLR(QString("%1 (%2)").arg(evlr.getName(), evlr.getDescription()));
 			}
 		}
 
@@ -880,12 +880,13 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 		//number of points read from the beginning of the current cloud part
 		unsigned pointsRead = 0;
 		CCVector3d Pshift(0, 0, 0);
+		bool preserveCoordinateShift = true;
 
 		//by default we read colors as triplets of 8 bits integers but we might dynamically change this
 		//if we encounter values using 16 bits (16 bits is the standard!)
 		unsigned char colorCompBitShift = 0;
 		bool forced8bitRgbMode = s_lasOpenDlg->forced8bitRgbMode();
-		ColorCompType rgb[3] = { 0, 0, 0 };
+		ccColor::Rgb rgb;
 
 		ccPointCloud* loadedCloud = nullptr;
 		std::vector< LasField::Shared > fieldsToLoad;
@@ -1029,8 +1030,12 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 					ifs.close();
 					return CC_FERR_NOT_ENOUGH_MEMORY;
 				}
-				loadedCloud->setGlobalShift(Pshift);
-
+				
+				if (preserveCoordinateShift)
+				{
+					loadedCloud->setGlobalShift(Pshift);
+				}
+				
 				//save the Spatial reference as meta-data
 				loadedCloud->setMetaData(s_LAS_SRS_Key, QVariant::fromValue(header.GetSRS()));
 
@@ -1176,9 +1181,12 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 						}
 					}
 				}
-				if (HandleGlobalShift(P, Pshift, parameters, useLasShift))
+				if (HandleGlobalShift(P, Pshift, preserveCoordinateShift, parameters, useLasShift))
 				{
-					loadedCloud->setGlobalShift(Pshift);
+					if (preserveCoordinateShift)
+					{
+						loadedCloud->setGlobalShift(Pshift);
+					}
 					ccLog::Warning("[LAS] Cloud has been recentered! Translation: (%.2f ; %.2f ; %.2f)", Pshift.x, Pshift.y, Pshift.z);
 				}
 
@@ -1212,7 +1220,7 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 							//we must set the color (black) of all the previously skipped points
 							for (unsigned i = 0; i < loadedCloud->size() - 1; ++i)
 							{
-								loadedCloud->addRGBColor(ccColor::black.rgba);
+								loadedCloud->addRGBColor(ccColor::black);
 							}
 						}
 						else
@@ -1244,14 +1252,14 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 							//we fix all the previously read colors
 							for (unsigned i = 0; i < loadedCloud->size() - 1; ++i)
 							{
-								loadedCloud->setPointColor(i, ccColor::black.rgba); //255 >> 8 = 0!
+								loadedCloud->setPointColor(i, ccColor::black); //255 >> 8 = 0!
 							}
 						}
 					}
 
-					rgb[0] = static_cast<ColorCompType>(col[0] >> colorCompBitShift);
-					rgb[1] = static_cast<ColorCompType>(col[1] >> colorCompBitShift);
-					rgb[2] = static_cast<ColorCompType>(col[2] >> colorCompBitShift);
+					rgb.r = static_cast<ColorCompType>(col[0] >> colorCompBitShift);
+					rgb.g = static_cast<ColorCompType>(col[1] >> colorCompBitShift);
+					rgb.b = static_cast<ColorCompType>(col[2] >> colorCompBitShift);
 
 					loadedCloud->addRGBColor(rgb);
 				}
@@ -1383,7 +1391,7 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 						||	(field->firstValue != field->defaultValue && field->firstValue >= field->minValue))
 					{
 						field->sf = new ccScalarField(qPrintable(field->getName()));
-						if (field->sf->reserve(fileChunkSize))
+						if (field->sf->reserveSafe(fileChunkSize))
 						{
 							field->sf->link();
 
