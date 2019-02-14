@@ -92,7 +92,6 @@ public:
 	using Shared = QSharedPointer<LasField>;
 
 public:
-	//! Default constructor
 	LasField(LAS_FIELDS fieldType = LAS_INVALID, double defaultVal = 0, double min = 0.0, double max = -1.0);
 	virtual ~LasField() = default;
 	

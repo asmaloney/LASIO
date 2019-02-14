@@ -22,16 +22,15 @@
 class LASIO : public QObject, public ccIOFilterPluginInterface
 {
 	Q_OBJECT
-	Q_INTERFACES(ccIOFilterPluginInterface)
+	Q_INTERFACES( ccIOFilterPluginInterface )
 	
-	Q_PLUGIN_METADATA(IID "cccorp.cloudcompare.plugin.LASIO" FILE "info.json")
+	Q_PLUGIN_METADATA( IID "cccorp.cloudcompare.plugin.LASIO" FILE "info.json" )
 
 public:
 	explicit LASIO( QObject *parent = nullptr );
 	
-	virtual void registerCommands( ccCommandLineInterface *cmd ) override;
+	void registerCommands( ccCommandLineInterface *cmd ) override;
 	
-	// inherited from ccIOFilterPluginInterface
 	QVector<FileIOFilter::Shared> getFilters() override;
 };
 

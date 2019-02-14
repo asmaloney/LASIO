@@ -18,13 +18,13 @@
 #include "LASOpenDlg.h"
 
 //Qt
-#include <QMessageBox>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QMessageBox>
 
 //System
-#include <string.h>
-#include <assert.h>
+#include <cassert>
+#include <cstring>
 
 LASOpenDlg::LASOpenDlg(QWidget* parent)
 	: QDialog(parent)
@@ -73,10 +73,12 @@ void LASOpenDlg::onBrowse()
 
 bool FieldIsPresent(const std::vector<std::string>& dimensions, LAS_FIELDS field)
 {
-	for (std::vector<std::string>::const_iterator it=dimensions.begin(); it!=dimensions.end(); ++it)
+	for (const auto & dimension : dimensions)
 	{
-		if (QString(it->c_str()).toUpper() == QString(LAS_FIELD_NAMES[field]).toUpper())
+		if (QString(dimension.c_str()).toUpper() == QString(LAS_FIELD_NAMES[field]).toUpper())
+		{
 			return true;
+		}
 	}
 
 	return false;
@@ -158,8 +160,6 @@ bool LASOpenDlg::doLoad(LAS_FIELDS field) const
 		assert(false);
 		return false;
 	}
-
-	return false;
 }
 
 void LASOpenDlg::clearEVLRs()
@@ -169,7 +169,7 @@ void LASOpenDlg::clearEVLRs()
 	extraFieldGroupBox->setChecked(false);
 }
 
-void LASOpenDlg::setInfos(	QString filename,
+void LASOpenDlg::setInfo(	const QString& filename,
 							unsigned pointCount,
 							const CCVector3d& bbMin,
 							const CCVector3d& bbMax)
@@ -187,7 +187,7 @@ void LASOpenDlg::setInfos(	QString filename,
 								.arg(bbMin.z, 0, 'f').arg(bbMax.z, 0, 'f'));
 }
 
-void LASOpenDlg::addEVLR(QString description)
+void LASOpenDlg::addEVLR(const QString& description)
 {
 	QListWidgetItem* item = new QListWidgetItem(description);
 	evlrListWidget->addItem(item);

@@ -27,7 +27,7 @@ public:
 	//static accessors
 	static inline QString GetFileFilter() { return "LAS cloud (*.las *.laz)"; }
 	static inline QString GetDefaultExtension() { return "las"; }
-
+	
 	//inherited from FileIOFilter
 	bool importSupported() const override { return true; }
 	bool exportSupported() const override { return true; }
@@ -38,7 +38,6 @@ public:
 	QString getDefaultExtension() const override;
 	bool canLoadExtension(const QString& upperCaseExt) const override;
 	bool canSave(CC_CLASS_ENUM type, bool& multiple, bool& exclusive) const override;
-
 };
 
 #endif //CC_LAS_FILTER_HEADER

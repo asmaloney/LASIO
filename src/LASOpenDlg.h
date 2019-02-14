@@ -25,7 +25,7 @@
 #include <ui_openLASFileDlg.h>
 
 //system
-#include <string.h>
+#include <cstring>
 #include <vector>
 
 //CCLib
@@ -35,49 +35,44 @@
 class LASOpenDlg : public QDialog, public Ui::OpenLASFileDialog
 {
 	Q_OBJECT
-
+	
 public:
-
-	//! Default constructor
-	explicit LASOpenDlg(QWidget* parent = 0);
-
+	explicit LASOpenDlg(QWidget* parent = nullptr);
+	
 	//! Sets available dimensions
 	void setDimensions(const std::vector<std::string>& dimensions);
-
+	
 	//! Whether to load a given field
 	bool doLoad(LAS_FIELDS field) const;
-
+	
 	//! Clears the 'extra bytes' record
 	void clearEVLRs();
-
+	
 	//! Sets the information about the file
-	void setInfos(	QString filename,
-					unsigned pointCount,
-					const CCVector3d& bbMin,
-					const CCVector3d& bbMax);
-
+	void setInfo(const QString& filename,
+				 unsigned pointCount,
+				 const CCVector3d& bbMin,
+				 const CCVector3d& bbMax);
+	
 	//! Adds an 'extra bytes' record entry
-	void addEVLR(QString description);
-
+	void addEVLR(const QString& description);
+	
 	//! Returns whether an EVLR is selected for laoding or not
 	bool doLoadEVLR(size_t index) const;
-
+	
 	//! Auto-skip mode (to use the same parameters for ALL files afterwards)
 	inline bool autoSkipMode() const { return m_autoSkip; }
-
+	
 	//! Whether 8-bit RGB mode is forced or not
 	bool forced8bitRgbMode() const;
-
+	
 	//! Resets the "apply all" flag (if set)
 	void resetApplyAll();
-
-protected slots:
-
+	
+protected:
 	void onApplyAll();
 	void onBrowse();
-
-protected:
-
+	
 	bool m_autoSkip;
 };
 

@@ -75,8 +75,8 @@ public:
 
 bool LASFilter::canLoadExtension(const QString& upperCaseExt) const
 {
-	return (	upperCaseExt == "LAS"
-			||	upperCaseExt == "LAZ");
+	return (upperCaseExt == "LAS" ||
+			upperCaseExt == "LAZ");
 }
 
 bool LASFilter::canSave(CC_CLASS_ENUM type, bool& multiple, bool& exclusive) const
@@ -130,21 +130,17 @@ public:
 		case EXTRA_UINT8:
 		case EXTRA_INT8:
 			return 1;
-			break;
 		case EXTRA_UINT16:
 		case EXTRA_INT16:
 			return 2;
-			break;
 		case EXTRA_UINT32:
 		case EXTRA_INT32:
 		case EXTRA_FLOAT:
 			return 4;
-			break;
 		case EXTRA_UINT64:
 		case EXTRA_INT64:
 		case EXTRA_DOUBLE:
 			return 8;
-			break;
 		default:
 			assert(false);
 			break;
@@ -219,7 +215,7 @@ class LASWriter
 
 		inline size_t writtenCount() const { return writeCounter; }
 
-		const QString& getFilename() const { return filename; };
+		const QString& getFilename() const { return filename; }
 
 protected:
 
@@ -237,11 +233,11 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 	ccGenericPointCloud* theCloud = ccHObjectCaster::ToGenericPointCloud(entity);
 	if (!theCloud)
 	{
-		ccLog::Warning("[LAS] This filter can only save one cloud at a time!");
+		ccLog::Warning("[LAS] This filter can only save one cloud at a time");
 		return CC_FERR_BAD_ENTITY_TYPE;
 	}
 
-	unsigned numberOfPoints = theCloud->size();
+	unsigned int numberOfPoints = theCloud->size();
 	if (numberOfPoints == 0)
 	{
 		ccLog::Warning("[LAS] Cloud is empty!");
@@ -251,7 +247,7 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 	//colors
 	bool hasColor = theCloud->hasColors();
 
-	//additional fields (as scalar fields)
+	//standard las fields (as scalar fields)
 	std::vector<LasField> fieldsToSave;
 
 	if (theCloud->isA(CC_TYPES::POINT_CLOUD))
@@ -335,10 +331,6 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 				double s = s_saveDlg->customScaleDoubleSpinBox->value();
 				lasScale = CCVector3d(s, s, s);
 			}
-			//else
-			//{
-			//	lasScale = lasScale;
-			//}
 		}
 		else if (!hasScaleMetaData)
 		{
@@ -397,7 +389,7 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 	CCLib::NormalizedProgress nProgress(pDlg.data(), numberOfPoints);
 
 	assert(lasWriter.writer());
-	//liblas::Point point(boost::shared_ptr<liblas::Header>(new liblas::Header(lasWriter.writer->GetHeader())));
+
 	liblas::Point point(&lasWriter.writer()->GetHeader());
 	liblas::Classification classif = point.GetClassification();
 
@@ -411,13 +403,14 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 			point.SetCoordinates(Pglobal.x, Pglobal.y, Pglobal.z);
 		}
 		
-		if (hasColor)
+		if (hasColors)
 		{
-			const ColorCompType* rgb = theCloud->getPointColor(i);
+			const ccColor::Rgb &rgb = theCloud->getPointColor(i);
+			
 			//DGM: LAS colors are stored on 16 bits!
-			point.SetColor(liblas::Color(	static_cast<uint32_t>(rgb[0]) << 8,
-											static_cast<uint32_t>(rgb[1]) << 8,
-											static_cast<uint32_t>(rgb[2]) << 8
+			point.SetColor(liblas::Color(	static_cast<uint32_t>(rgb.r) << 8,
+											static_cast<uint32_t>(rgb.g) << 8,
+											static_cast<uint32_t>(rgb.b) << 8
 										)
 							);
 		}
@@ -519,6 +512,8 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 
 QStringList LASFilter::getFileFilters(bool onImport) const
 {
+	Q_UNUSED( onImport );
+	
 	return QStringList(GetFileFilter());
 }
 
@@ -596,16 +591,15 @@ struct TilingStruct
 		//init tiling dimensions
 		assert(Zdim < 3);
 		Z = Zdim;
-		X = (Z == 2 ? 0 : Z+1);
-		Y = (X == 2 ? 0 : X+1);
+		X = (Z == 2 ? 0 : Z + 1);
+		Y = (X == 2 ? 0 : X + 1);
 
 		bbMinCorner = bbMin;
 		tileDiag = bbMax - bbMin;
 		tileDiag.u[X] /= width;
 		tileDiag.u[Y] /= height;
+		unsigned int count = width * height;
 
-
-		unsigned count = width * height;
 		try
 		{
 			tileFiles.resize(count);
