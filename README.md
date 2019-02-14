@@ -24,4 +24,4 @@ add_library(las_c STATIC ${LIBLAS_C_SOURCES})
 - clone this repository in the `CloudCompare/plugins/3rdParty` directory
 - rerun CloudCompare's cmake
 - turn on `PLUGIN_LAS_IO` in your cmake options
-- set the `LIBLAS_*`` options to point at your `libLAS` build
+- set the `LIBLAS_*` options to point at your `libLAS` build
