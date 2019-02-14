@@ -753,9 +753,8 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 					//look for the corresponding EVLRs
 					const std::vector<liblas::VariableRecord>& vlrs = header.GetVLRs();
 					{
-						for (size_t i = 0; i < vlrs.size(); ++i)
+						for (const auto &vlr : vlrs)
 						{
-							const liblas::VariableRecord& vlr = vlrs[i];
 							if (vlr.GetUserId(false) == "LASF_Spec" && vlr.GetRecordId() == 4)
 							{
 								//EXTRA BYTES record length is 192

@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.0 )
 
-option( PLUGIN_LAS_IO "Check to install LASIO plugin" OFF )
+option( PLUGIN_LAS_IO "Install LASIO plugin" OFF )
 
 if ( PLUGIN_LAS_IO )
 	project( LASIO )
