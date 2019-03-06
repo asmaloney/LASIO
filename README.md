@@ -1,3 +1,6 @@
+[![CloudCompare Plugin](https://img.shields.io/badge/plugin-CloudCompare-brightgreen.svg)](https://github.com/CloudCompare/CloudCompare)
+[![License](https://img.shields.io/badge/License-GPL--2.0+-blue.svg)](https://opensource.org/licenses/GPL-2.0)
+
 # LASIO Plugin
 
 This is a plugin for [CloudCompare](https://github.com/CloudCompare/CloudCompare) to add LAS file 1.3 reading & writing based on [LASzip](https://github.com/LASzip/LASzip) and [libLAS](https://github.com/libLAS/libLAS).
