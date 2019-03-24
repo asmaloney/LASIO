@@ -22,7 +22,7 @@
 
 LASIO::LASIO( QObject* parent ) :
 	QObject( parent )
-  , ccIOFilterPluginInterface( ":/CC/plugin/LASIO/info.json" )
+  , ccIOPluginInterface( ":/CC/plugin/LASIO/info.json" )
 {
 }
 
@@ -31,9 +31,7 @@ void LASIO::registerCommands( ccCommandLineInterface *cmd )
 	Q_UNUSED( cmd );
 }
 
-QVector<FileIOFilter::Shared> LASIO::getFilters()
+ccIOPluginInterface::FilterList LASIO::getFilters()
 {
-	return QVector<FileIOFilter::Shared>{
-		FileIOFilter::Shared( new LASFilter ),
-	};
+	return { FileIOFilter::Shared( new LASFilter ) };
 }

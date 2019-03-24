@@ -17,12 +17,12 @@
 //#                                                                        #
 //##########################################################################
 
-#include "ccIOFilterPluginInterface.h"
+#include "ccIOPluginInterface.h"
 
-class LASIO : public QObject, public ccIOFilterPluginInterface
+class LASIO : public QObject, public ccIOPluginInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( ccIOFilterPluginInterface )
+	Q_INTERFACES( ccIOPluginInterface )
 	
 	Q_PLUGIN_METADATA( IID "cccorp.cloudcompare.plugin.LASIO" FILE "info.json" )
 
@@ -31,7 +31,7 @@ public:
 	
 	void registerCommands( ccCommandLineInterface *cmd ) override;
 	
-	QVector<FileIOFilter::Shared> getFilters() override;
+	FilterList getFilters() override;
 };
 
 #endif
