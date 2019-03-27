@@ -54,7 +54,7 @@ Q_DECLARE_METATYPE(liblas::SpatialReference)
 
 class LASSaveDlg;
 
-static const char s_LAS_SRS_Key[] = "LAS.spatialReference.nosave"; //DGM: added the '.nosave' suffix because this custom type can't be streamed properly
+constexpr char s_LAS_SRS_Key[] = "LAS.spatialReference.nosave"; //DGM: added the '.nosave' suffix because this custom type can't be streamed properly
 
 static QSharedPointer<LASOpenDlg> s_lasOpenDlg(nullptr);
 
@@ -73,12 +73,6 @@ public:
 		setupUi(this);
 	}
 };
-
-bool LASFilter::canLoadExtension(const QString& upperCaseExt) const
-{
-	return (upperCaseExt == "LAS" ||
-			upperCaseExt == "LAZ");
-}
 
 bool LASFilter::canSave(CC_CLASS_ENUM type, bool& multiple, bool& exclusive) const
 {
@@ -224,6 +218,19 @@ protected:
 	QString filename;
 	size_t writeCounter;
 };
+
+LASFilter::LASFilter()
+    : FileIOFilter( {
+                    "_LASIO Filter",
+                    3.0f,	// priority
+                    QStringList{ "las" },
+                    "las",
+                    QStringList{ "LAS cloud (*.las *.laz)" },
+                    QStringList{ "LAS cloud (*.las *.laz)" },
+                    Import | Export
+                    } )
+{
+}
 
 CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, const SaveParameters& parameters)
 {
@@ -508,18 +515,6 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 	lasWriter.close();
 
 	return result;
-}
-
-QStringList LASFilter::getFileFilters(bool onImport) const
-{
-	Q_UNUSED( onImport );
-	
-	return QStringList(GetFileFilter());
-}
-
-QString LASFilter::getDefaultExtension() const
-{
-	return GetDefaultExtension();
 }
 
 //! LAS 1.4 EVLR record
