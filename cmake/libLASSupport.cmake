@@ -19,4 +19,22 @@ function( target_link_liblas )
 			${LIBLAS_LIB_DIR}/liblas_c.a
 			${LIBLAS_LIB_DIR}/liblaszip.a )
 	endif()
+	
+	# Boost
+	set( Boost_USE_STATIC_LIBS ON )
+	set( Boost_USE_MULTITHREADED ON )
+	set( Boost_USE_STATIC_RUNTIME OFF )
+	
+	# libLAS requires Boost >= 1.38 according to docs
+	# this list comes from the CMake file for LibLAS
+	find_package(Boost 1.38 COMPONENTS
+		program_options
+		thread system
+		iostreams
+		filesystem
+		REQUIRED )
+	
+	if( Boost_FOUND )
+		target_link_libraries( ${PROJECT_NAME} ${Boost_LIBRARIES} )
+	endif()
 endfunction()
