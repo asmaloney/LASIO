@@ -28,7 +28,7 @@
 #include <cstring>
 #include <vector>
 
-//CCLib
+//CCCoreLib
 #include <CCGeom.h>
 
 //! Dialog to choose the LAS fields to load

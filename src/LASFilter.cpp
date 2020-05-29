@@ -29,7 +29,7 @@
 #include <ccProgressDialog.h>
 #include <ccScalarField.h>
 
-//CCLib
+//CCCoreLib
 #include <CCPlatform.h>
 
 //Liblas
@@ -305,9 +305,9 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 		}
 
 		//optimal scale (for accuracy) --> 1e-9 because the maximum integer is roughly +/-2e+9
-		CCVector3d optimalScale(1.0e-9 * std::max<double>(diag.x, ZERO_TOLERANCE),
-								1.0e-9 * std::max<double>(diag.y, ZERO_TOLERANCE),
-								1.0e-9 * std::max<double>(diag.z, ZERO_TOLERANCE));
+		CCVector3d optimalScale(1.0e-9 * std::max<double>(diag.x, std::numeric_limits<double>::epsilon()),
+								1.0e-9 * std::max<double>(diag.y, std::numeric_limits<double>::epsilon()),
+								1.0e-9 * std::max<double>(diag.z, std::numeric_limits<double>::epsilon()));
 
 		if (parameters.alwaysDisplaySaveDialog)
 		{
@@ -393,7 +393,7 @@ CC_FILE_ERROR LASFilter::saveToFile(ccHObject* entity, const QString& filename, 
 		pDlg->setInfo(QObject::tr("Points: %L1").arg( numberOfPoints ));
 		pDlg->start();
 	}
-	CCLib::NormalizedProgress nProgress(pDlg.data(), numberOfPoints);
+	CCCoreLib::NormalizedProgress nProgress(pDlg.data(), numberOfPoints);
 
 	assert(lasWriter.writer());
 
@@ -869,7 +869,7 @@ CC_FILE_ERROR LASFilter::loadFile(const QString& filename, ccHObject& container,
 			pDlg->setInfo(QObject::tr("Points: %L1").arg( nbOfPoints ));
 			pDlg->start();
 		}
-		CCLib::NormalizedProgress nProgress(pDlg.data(), nbOfPoints);
+		CCCoreLib::NormalizedProgress nProgress(pDlg.data(), nbOfPoints);
 
 		//number of points read from the beginning of the current cloud part
 		unsigned pointsRead = 0;
